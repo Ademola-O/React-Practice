@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+  </head>
+  <body>
+    <!-- Container for React app -->
+    <div class="js-container"></div>
+
+        
+    </script>
+
+    <!-- Load React and ReactDOM from the CDN -->
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+
+    <!-- Load Babel for JSX transformation -->
+    <!-- All elements need a closing tag when writing in JSX. However if 
+     theres nothing in an element we can use a self closing tag 
+     '<input></input>' turns to '<input />'
+    -->
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+
+       //
+       function ChatInput(){
+        return (
+          <>
+            <input placeholder="Send a message to Chatbot" size="35"/>
+            <button>Send</button>
+            </>
+        );
+        }
+
+
+      // ChatMessage Componenet that can be reused 
+      // 'props' = properties. An object that allows us to see all the attributes your function
+      function ChatMessage ({message, sender}){
+        // const message = props.message;
+        // const sender = props.sender; 
+        // 'const {message, sender} = props'is a shorter way of writing out those two line of code
+        // const { message, sender } = props; 
+
+        if (sender === 'robot') {
+          return (
+            <div>    
+              <img src="robot.png" width="50" />
+              {message}
+            </div>
+          )
+        }
+      
+
+          return (
+            <div>    
+            {message}
+            <img src="user.png" width="50" />
+
+            </div>
+        );
+
+        }
+      
+
+        // React cant take more than one element so evereything is wrapped in a <div>
+          // Uisng <div> inserts an extra div into your webpage which can lead to issues
+          // so react uses something called 'Fragments' which are just <div> tags without 
+          // the word div - '<> </>'.    
+        const app = (
+            <>
+            <ChatInput />
+            <ChatMessage message="hello chatbox" sender="user" />
+            <ChatMessage message="Hello! How can I help you?" sender="robot" />
+            <ChatMessage message="Can you get me todays date?" sender="user" />
+            <ChatMessage message="Today is May 21st" sender="robot" />
+            </>
+            
+        );
+        // Sets up the React app and renders the initial content
+      const container = document.querySelector('.js-container');
+      ReactDOM.createRoot(container).render(app);
+    </script>
+  </body>
+</html>
