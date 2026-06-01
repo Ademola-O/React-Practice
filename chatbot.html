@@ -3,6 +3,95 @@
   <head>
     <title>Chatbot</title>
   </head>
+
+  <style>
+    /* CSS styles for the chatbot app */
+    /* in React we aee able to write CSS styles in the same file as our React code, which is called 'CSS-in-JS'. */
+    /* We can use regular CSS syntax to style our React components. */
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0px;
+      margin-bottom: 0px;
+    }
+
+    .app-container {
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+
+      height: 100vh;
+      /* 'display: flex' positions elements in a row by default */
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    .send-button {
+      margin-left: 10px;
+      background-color: rgb(25, 135, 84);;
+      color: white;
+      border-radius: 10px;
+      border: none;
+      padding: 12px 20px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .input-field {
+      padding: 12px 16px;
+      font-size: 15px;
+      border-radius: 10px;
+      border-width: 1px;
+
+      /* This allows the input field to take up all available space in the container, pushing the send button to the right. */  
+      flex-grow: 1; 
+    }
+
+    .chat-input-container {
+      display: flex;
+    }
+
+    .chat-message-user {
+      display: flex;
+      justify-content: end;
+      /*'align-items' is a CSS property that specifies how the items in a flex container are aligned along the cross axis (perpendicular to the main axis). */
+      /* 'start' value aligns the items to the start of the cross axis. In this case, it will align the chat messages to the top of the container. */
+      align-items: start;
+    }
+
+    .chat-message-robot {
+      display: flex;
+      justify-content: start;
+      align-items: start;
+    }
+    .chat-message-text {
+      background-color: rgb(238, 238, 238);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-right: 10px;
+      margin-left: 10px;
+      margin-bottom: 20px;
+      max-width: 300px;
+    }
+
+    .chat-message-profile {
+      width: 45px;
+      padding: 12px 15px;
+       /* 'border-radius: 50%' creates a circular image by making the border radius equal to half of the width and height of the image. */
+    }
+
+    .chat-messages-container {
+      flex-grow: 1;
+      margin-top: 20px;
+
+      /* 'overflow: scroll' allows the chat messages container to be scrollable when the content exceeds the height of the container. */
+      overflow: scroll;
+      scrollbar-width: none; /* For Firefox */
+    }
+
+  </style>
+
   <body>
     <!-- Container for React app -->
     <div class="js-container"></div>
@@ -74,7 +163,7 @@
       }
 
       return (
-        <>
+        <div className="chat-input-container">
           <input 
             placeholder="Send a message to Chatbot" 
             size="35"
@@ -85,11 +174,15 @@
             // 'value' is a prop that sets the current value of the input field.
             // controlled input = an input element whose value is controlled by React state.
             value={inputText}
+            className="input-field"
         />
           <button
             onClick={sendMessage}
+            // 'className' is a prop that sets the CSS class of the button element. 
+            // In React, we use 'className' instead of 'class' to avoid conflicts with the JavaScript 'class' keyword.
+            className="send-button"
             >Send</button>
-          </>
+          </div>
         );
       }
 
@@ -116,14 +209,23 @@
         */ 
 
           return (
-            <div> 
+            // using a ternary operator to conditionally render the chat message based on the sender.
+            // If the sender is 'robot', we render a div with the class 'chat-message-user' and an image of a robot.
+            // If the sender is not 'robot' (i.e. it is 'user'), we render a div with the class 'chat-message-robot' and an image of a user.
+            <div className={
+              sender === 'user' 
+                ? 'chat-message-user' 
+                : 'chat-message-robot'
+            }> 
               
               {sender === 'robot' && (
-                <img src="robot.png" width="50" />
+                <img src="robot.png" className="chat-message-profile" />
               )}
-              {message}
+              <div className="chat-message-text">
+                {message}    
+              </div>          
               { sender === 'user' && (
-                <img src="user.png" width="50" />
+                <img src="user.png" className="chat-message-profile" />
               )}
 
             </div>
@@ -134,10 +236,22 @@
         // In React dont update the data directly. Best practice is to create a copy then modify the copy.
         // 'useState' is a React hook that allows us to add state to our functional components.
         // 'useState' returns an array with two items. The first item is the current state value, and the second item is a function that allows us to update that state value.
-        function ChatMessages( {chatMessages} ) {
-          
-         
+        function ChatMessages({
+          chatMessages}) {
+            const chatMessagesRef = React.useRef(null);
 
+            // React hooks are functions that let us use state and other React features in functional components.
+            // Put hooks at the top of the component, before any early returns.
+            // hooks must be called in the same order on every render. Don't call hooks inside loops, conditions, or nested functions.
+            React.useEffect(() => {
+              const containerElem = chatMessagesRef.current; 
+              if (containerElem) {
+                // 'scrollHeight' is the total height of the content in the container, including the part that is not visible due to overflow.
+                // 'scrollTop' is the number of pixels that the content of an element is scrolled vertically. 
+                // By setting 'scrollTop' to 'scrollHeight', we are scrolling to the bottom of the container, which allows us to see the most recent chat messages.
+                containerElem.scrollTop = containerElem.scrollHeight;
+              }
+            }, [chatMessages]);
 // --------------------------------------------------------- Earlier code for sendMessage function --------------------------------------------------------------------------------------
 
           // 'chatMessages' is the current state value, which is an array of chat message objects.
@@ -162,7 +276,9 @@
           // 'onClick' = Event & '{sendMessage}' = Event handler
           // event prop always starts with 'on' followed by the name of the desired event.
           // event props must always use camelCase.
-            <>
+            <div className="chat-messages-container"
+
+              ref={chatMessagesRef} >
              
               {/* 
                   '.map' allows me to go through an array and carry out a function on each item in array 
@@ -182,6 +298,7 @@
             }); 
               */ } 
 
+            
               {chatMessages.map((chatMessage) => {
                 return (
                   <ChatMessage
@@ -194,7 +311,7 @@
               />          
             );
           })}
-          </>
+          </div>
         );
         }
         
@@ -237,15 +354,16 @@
         
 
           return (
-           <>
-            <ChatInput
-              chatMessages={chatMessages}
-              setChatMessages={setChatMessages}
-            />
+           <div className="app-container">
+           
             <ChatMessages
               chatMessages={chatMessages}
             />
-           </>
+             <ChatInput
+              chatMessages={chatMessages}
+              setChatMessages={setChatMessages}
+            />
+           </div>
         );
     }
        
