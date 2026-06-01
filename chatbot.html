@@ -14,6 +14,8 @@
     <script src="https://unpkg.com/supersimpledev/react.js"></script>
     <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
 
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+
     <!-- Load Babel for JSX transformation -->
     <!-- All elements need a closing tag when writing in JSX. However if 
      theres nothing in an element we can use a self closing tag 
@@ -22,16 +24,74 @@
 
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
     <script type="text/babel">
+       function ChatInput({chatMessages, setChatMessages}) {
+        // React hook that allows us to add state to our functional components.
+        // 'useState' returns an array with two items. The first item is the current state value, 
+        // and the second item is a updater function that allows us to update that state value.
+        const [inputText, setInputText] = React.useState(''); 
 
-       //
-       function ChatInput(){
-        return (
-          <>
-            <input placeholder="Send a message to Chatbot" size="35"/>
-            <button>Send</button>
-            </>
-        );
+        function saveInputText(event) {
+          // 'event' is an object that contains information about the event that occurred.
+          // 'event.target' is the element that triggered the event. In this case, it would be the input element. 
+          // We can use 'event.target.value' to get the current value of the input element.
+          // 'setInputText' is the updater function that allows us to update the state value of 'inputText'. 
+          // We pass in the new value of the input text to update the state.
+          setInputText(event.target.value);
         }
+
+        function sendMessage() {
+
+          const newChatMessages = [
+              ...chatMessages, 
+              {
+                // 'inputText' is the current state value of the input text, 
+                // which is updated every time the user types in the input field.
+                // When the user clicks the send button, we want to add a new chat message to the list of chat messages.
+                // We create a new chat message object with the message text, sender, and a unique id.
+                message: inputText,
+                sender: 'user',
+                id: crypto.randomUUID()
+              }
+          ];
+
+          // We use the updater function 'setChatMessages' to update the state value of 'chatMessages' with the new array of chat messages that includes the new chat message we just created.    
+          setChatMessages(newChatMessages);
+                         
+          const response = Chatbot.getResponse(inputText);
+          
+          setChatMessages([
+
+            // We want to add the chatbot's response as a new chat message to the list of chat messages.
+            ...newChatMessages, 
+            {
+              message: response,
+              sender: 'robot',
+              id: crypto.randomUUID()
+          }
+        ]);
+
+          setInputText(''); // Clear the input field after sending the message
+      }
+
+      return (
+        <>
+          <input 
+            placeholder="Send a message to Chatbot" 
+            size="35"
+            // 'onChange' is an event prop that runs a function when the value of an input changes.
+            // 'saveInputText' is the function that will run when the value of the input changes.
+            onChange={saveInputText}
+            
+            // 'value' is a prop that sets the current value of the input field.
+            // controlled input = an input element whose value is controlled by React state.
+            value={inputText}
+        />
+          <button
+            onClick={sendMessage}
+            >Send</button>
+          </>
+        );
+      }
 
 
       // ChatMessage Componenet that can be reused 
@@ -42,6 +102,7 @@
         // 'const {message, sender} = props'is a shorter way of writing out those two line of code
         // const { message, sender } = props; 
 
+        /*
         if (sender === 'robot') {
           return (
             <div>    
@@ -50,36 +111,150 @@
             </div>
           )
         }
-      
+         IF statment can be shortened using a guard operator '&&' 
+         '{sender === 'robot' && <img src="..."}'
+        */ 
 
           return (
-            <div>    
-            {message}
-            <img src="user.png" width="50" />
+            <div> 
+              
+              {sender === 'robot' && (
+                <img src="robot.png" width="50" />
+              )}
+              {message}
+              { sender === 'user' && (
+                <img src="user.png" width="50" />
+              )}
 
             </div>
         );
 
         }
-      
+        // Use the updater function to update your react
+        // In React dont update the data directly. Best practice is to create a copy then modify the copy.
+        // 'useState' is a React hook that allows us to add state to our functional components.
+        // 'useState' returns an array with two items. The first item is the current state value, and the second item is a function that allows us to update that state value.
+        function ChatMessages( {chatMessages} ) {
+          
+         
+
+// --------------------------------------------------------- Earlier code for sendMessage function --------------------------------------------------------------------------------------
+
+          // 'chatMessages' is the current state value, which is an array of chat message objects.
+          // 'setChatMessages' is the function that allows us to update the state value of 'chatMessages'. 
+          // We pass in a new array that contains all the previous chat messages (using the spread operator) and a new chat message object.
+          // '.push()' adds a value to the end of an array
+          // 'crypto.randomUUID()' generates a unique random id string every time we run that code.
+          // --- SPREAD OPERATOR '...' takes the values of an aray and copies them into a new array.
+                     //                     function sendMessage() {
+                     //                       setChatMessages([
+                     //                         ...chatMessages, 
+                     //                         {
+                     //                           message: 'test',
+                     //                           sender: 'user',
+                     //                           id: crypto.randomUUID()
+                     //                         }
+                     //                       ]);
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+          return (
+          // Event handler's run a function when we interact with the website.
+          // 'onClick' = Event & '{sendMessage}' = Event handler
+          // event prop always starts with 'on' followed by the name of the desired event.
+          // event props must always use camelCase.
+            <>
+             
+              {/* 
+                  '.map' allows me to go through an array and carry out a function on each item in array 
+                  arrow function used, more concise than typing out 'function' keyword.  
+                  'key' is a special attribute that helps React identify which items have changed, are added, or are removed. 
+
+                  const chatMessageComponenets = chatMessages.map((chatMessage) => {
+                  return (
+                  <chatMessage 
+                  curly brackets {} instead of '' so we can save the result of chat message 
+                  rather than saving a string callled 'chatMessage.message' 
+                  message={chatMessage.message}
+                  sender={chatMessage.sender}
+                  key={chatMessage.id}
+                />
+              );
+            }); 
+              */ } 
+
+              {chatMessages.map((chatMessage) => {
+                return (
+                  <ChatMessage
+                    // curly brackets {} instead of '' so we can save the result of chat message rather than saving a string callled 'chatMessage.message'
+                    message={chatMessage.message}
+                    // 'sender' is a prop we created in the ChatMessage component, we can set it to the value of 'chatMessage.sender'
+                    sender={chatMessage.sender}
+                    // 'key' is a special attribute that helps React identify which items have changed, are added, or are removed.
+                    key={chatMessage.id}
+              />          
+            );
+          })}
+          </>
+        );
+        }
+        
+
+
 
         // React cant take more than one element so evereything is wrapped in a <div>
           // Uisng <div> inserts an extra div into your webpage which can lead to issues
           // so react uses something called 'Fragments' which are just <div> tags without 
-          // the word div - '<> </>'.    
-        const app = (
-            <>
-            <ChatInput />
-            <ChatMessage message="hello chatbox" sender="user" />
-            <ChatMessage message="Hello! How can I help you?" sender="robot" />
-            <ChatMessage message="Can you get me todays date?" sender="user" />
-            <ChatMessage message="Today is May 21st" sender="robot" />
-            </>
-            
+          // the word div - '<> </>'.  
+        function App() { 
+
+          const [chatMessages, setChatMessages] = React.useState([{
+            message: 'hello chatbox', 
+            sender: 'user',
+            id: 'id1'
+          }, {
+            message: 'Hello! How can I help you',
+            sender: 'robot',
+            id: 'id2'
+
+          }, {
+            message: 'Can you get me todays date',
+            sender: 'user',
+            id: 'id3'
+          }, {
+            message: 'Today is May 21st',
+            sender: 'robot',
+            id: 'id4'
+          }]);
+          // 'chatMessages' is the current state value, and 'setChatMessages' is the function that allows us to update that state value.
+          // we can use array destructuring to assign the values of the array returned by 'useState' to two separate variables.
+          // in array destructuring, we use square brackets [] on the left side of the assignment to indicate that we want to extract values from an array and assign them to variables.
+          // in this case, we are extracting the first value of the array (the current state value) and assigning it to 'chatMessages', 
+          // and we are extracting the second value of the array (the function to update the state) and assigning it to 'setChatMessages'.
+          // 'const [chatMessages, setChatMessages] = array;' is a shorter way of writing out those three lines of code.
+          // const [chatMessages, setChatMessages] = array; 
+          // const chatMessages = array[0];
+          // const setChatMessages = array[1];
+        
+
+          return (
+           <>
+            <ChatInput
+              chatMessages={chatMessages}
+              setChatMessages={setChatMessages}
+            />
+            <ChatMessages
+              chatMessages={chatMessages}
+            />
+           </>
         );
+    }
+       
+           
+            
+        
         // Sets up the React app and renders the initial content
       const container = document.querySelector('.js-container');
-      ReactDOM.createRoot(container).render(app);
+      ReactDOM.createRoot(container).render(<App />);
     </script>
   </body>
 </html>
