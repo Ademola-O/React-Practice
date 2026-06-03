@@ -1,0 +1,13 @@
+
+.app-container {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+
+  height: 100vh;
+  /* 'display: flex' positions elements in a row by default */
+  display: flex;
+  flex-direction: column;
+}
+
+

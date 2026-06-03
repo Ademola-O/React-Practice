@@ -1,0 +1,29 @@
+
+.chat-message-user {
+    display: flex;
+    justify-content: end;
+    /*'align-items' is a CSS property that specifies how the items in a flex container are aligned along the cross axis (perpendicular to the main axis). */
+    /* 'start' value aligns the items to the start of the cross axis. In this case, it will align the chat messages to the top of the container. */
+    align-items: start;
+}
+
+.chat-message-robot {
+    display: flex;
+    justify-content: start;
+    align-items: start;
+}
+.chat-message-text {
+    background-color: rgb(238, 238, 238);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    max-width: 300px;
+}
+
+.chat-message-profile {
+    width: 45px;
+    padding: 12px 15px;
+    /* 'border-radius: 50%' creates a circular image by making the border radius equal to half of the width and height of the image. */
+}
